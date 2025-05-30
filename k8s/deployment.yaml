@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: example-self-hosted-saas-app
-  namespace: default
+  namespace: example-app
 spec:
   replicas: 2
   selector:

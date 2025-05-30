@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: example-app
+  labels:
+    name: example-app
+    app.kubernetes.io/name: example-app
+    app.kubernetes.io/part-of: example-self-hosted-saas 
