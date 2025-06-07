@@ -10,15 +10,21 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Log in to Harbor
-      run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
+      - name: Log in to Harbor
+        run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
 
-    - name: Build Docker image
-      run: docker build -t localhost/app/${{ github.repository }}:${{ github.sha }} .
+      - name: Build Docker image
+        run: |
+          docker build -t harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }} .
+          docker tag harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }} harbor.local/app/humansoftware/example_self_hosted_saas_app:latest
 
-    - name: Push Docker image
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: docker push localhost/app/${{ github.repository }}:${{ github.sha }}
+      - name: Push Docker image (sha)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }}
+
+      - name: Push Docker image (latest)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push harbor.local/app/humansoftware/example_self_hosted_saas_app:latest
