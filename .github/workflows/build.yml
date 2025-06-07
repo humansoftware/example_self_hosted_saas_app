@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+    env:
+      IMAGE_NAME: harbor.local/example_self_hosted_saas_app/example_self_hosted_saas_app
+
 
     steps:
       - name: Checkout
@@ -18,13 +21,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }} .
-          docker tag harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }} harbor.local/app/humansoftware/example_self_hosted_saas_app:latest
+          docker build -t $IMAGE_NAME:${{ github.sha }} .
+          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
 
       - name: Push Docker image (sha)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: docker push harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }}
+        run: docker push $IMAGE_NAME:${{ github.sha }}
 
       - name: Push Docker image (latest)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: docker push harbor.local/app/humansoftware/example_self_hosted_saas_app:latest
+        run: docker push $IMAGE_NAME:latest
