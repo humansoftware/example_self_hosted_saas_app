@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: self-hosted
     env:
-      IMAGE_NAME: harbor.local/example_self_hosted_saas_app/example_self_hosted_saas_app
+      IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
 
 
     steps:
