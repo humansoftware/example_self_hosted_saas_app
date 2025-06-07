@@ -1,39 +1,30 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: example-self-hosted-saas-app
-  namespace: example-app
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: example-self-hosted-saas-app
-  template:
-    metadata:
-      labels:
-        app: example-self-hosted-saas-app
-    spec:
-      containers:
-      - name: example-self-hosted-saas-app
-        image: example-self-hosted-saas-app:latest
-        ports:
-        - containerPort: 3000
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 15
-          periodSeconds: 20 
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to Harbor
+        run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }} .
+          docker tag harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }} harbor.local/app/humansoftware/example_self_hosted_saas_app:latest
+
+      - name: Push Docker image (sha)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push harbor.local/app/humansoftware/example_self_hosted_saas_app:${{ github.sha }}
+
+      - name: Push Docker image (latest)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push harbor.local/app/humansoftware/example_self_hosted_saas_app:latest
