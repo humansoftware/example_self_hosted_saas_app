@@ -14,10 +14,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - your-domain.com  # Replace with your actual domain
+        - example.mvalle.com # Replace with your actual domain
       secretName: example-self-hosted-saas-app-tls
   rules:
-    - host: your-domain.com  # Replace with your actual domain
+    - host: example.mvalle.com # Replace with your actual domain
       http:
         paths:
           - path: /api
@@ -40,4 +40,4 @@ spec:
               service:
                 name: example-self-hosted-saas-app
                 port:
-                  number: 80 
+                  number: 80
