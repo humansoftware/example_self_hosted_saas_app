@@ -7,5 +7,4 @@ spec:
   imageRepositoryRef:
     name: example-self-hosted-saas-app
   policy:
-    pattern:
-      regexp: "^[a-f0-9]{40}$"
+    regexp: "^[a-f0-9]{40}$"
