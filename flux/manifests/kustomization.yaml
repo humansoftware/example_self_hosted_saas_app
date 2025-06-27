@@ -6,6 +6,9 @@ resources:
   - service.yaml
   - ingress.yaml
   - middleware.yaml
+  - imagerepository.yaml
+  - imagepolicy.yaml
+  - imageupdateautomation.yaml
 
 namespace: example-self-hosted-saas-app
 

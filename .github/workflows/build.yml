@@ -40,5 +40,5 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
 
-      - name: Run kubectl command
+      - name: Run example kubectl command if you don't want to use flux
         run: kubectl get pods -n example-self-hosted-saas-app
