@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: example-self-hosted-saas-app
+  namespace: example-self-hosted-saas-app
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: example-self-hosted-saas-app
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: "Update image to {{range .Updated.Images}}{{.}}{{end}}"
+    push:
+      branch: main
+  update:
+    strategy: Setters
