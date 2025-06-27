@@ -7,5 +7,5 @@ spec:
   imageRepositoryRef:
     name: example-self-hosted-saas-app
   policy:
-    semver:
-      range: ">=0.0.0-0"
+    pattern:
+      regexp: "^[a-f0-9]{40}$"
