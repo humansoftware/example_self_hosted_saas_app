@@ -31,7 +31,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build and push Docker image with cache
+      - name: Build Docker image with cache (PR only)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ env.IMAGE_NAME }}:pr-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          provenance: false
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: Build and push Docker image with cache (push to main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
           context: .
