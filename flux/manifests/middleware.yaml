@@ -2,11 +2,11 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: static-cache
-  namespace: default
+  namespace: example-self-hosted-saas-app
 spec:
   headers:
     customResponseHeaders:
-      Cache-Control: "public, max-age=86400, immutable"  # 1 day for static assets
+      Cache-Control: "public, max-age=86400, immutable" # 1 day for static assets
     browserXssFilter: true
     contentTypeNosniff: true
     forceSTSHeader: true
@@ -18,14 +18,14 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: example-self-hosted-saas-app-cache
-  namespace: example-app
+  namespace: example-self-hosted-saas-app
 spec:
   headers:
     customResponseHeaders:
-      Cache-Control: "public, max-age=3600"  # 1 hour for the main app
+      Cache-Control: "public, max-age=3600" # 1 hour for the main app
     browserXssFilter: true
     contentTypeNosniff: true
     forceSTSHeader: true
     stsIncludeSubdomains: true
     stsPreload: true
-    stsSeconds: 31536000 
+    stsSeconds: 31536000

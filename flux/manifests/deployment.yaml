@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: example-self-hosted-saas-app
-  namespace: example-app
+  namespace: example-self-hosted-saas-app
 spec:
   replicas: 2
   selector:
@@ -37,3 +37,6 @@ spec:
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 20
+          envFrom:
+            - secretRef:
+                name: example-self-hosted-saas-app-secrets
