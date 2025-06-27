@@ -31,3 +31,12 @@ jobs:
       - name: Push Docker image (latest)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_NAME:latest
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          mv kubectl /usr/local/bin/
+
+      - name: Run kubectl command
+        run: kubectl get pods -n example-self-hosted-saas-app
