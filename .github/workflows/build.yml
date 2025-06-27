@@ -38,7 +38,7 @@ jobs:
           echo "Installing kubectl version: ${KUBECTL_VERSION}"
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           chmod +x kubectl
-          mv kubectl /usr/local/bin/
+          sudo mv kubectl /usr/local/bin/
 
       - name: Run kubectl command
         run: kubectl get pods -n example-self-hosted-saas-app
