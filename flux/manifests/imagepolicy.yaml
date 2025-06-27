@@ -7,4 +7,5 @@ spec:
   imageRepositoryRef:
     name: example-self-hosted-saas-app
   policy:
-    regexp: "^[a-f0-9]{40}$"
+    alphabetical:
+      order: desc
