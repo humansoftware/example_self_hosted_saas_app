@@ -32,14 +32,11 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_NAME:latest
 
-      - name: Debug kubectl version fetch
-        run: |
-          echo "Fetching latest kubectl version..."
-          curl -s https://dl.k8s.io/release/stable.txt || echo "Failed to fetch version"
-
       - name: Install kubectl
-        run: |          
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        run: |
+          KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+          echo "Installing kubectl version: ${KUBECTL_VERSION}"
+          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           chmod +x kubectl
           mv kubectl /usr/local/bin/
 
