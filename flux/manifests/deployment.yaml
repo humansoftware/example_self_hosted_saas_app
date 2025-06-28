@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: example-self-hosted-saas-app
-          image: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app:03b8bae58322322e354ab75addb33f2996eeac1c # {"$imagepolicy": "example-self-hosted-saas-app:example-self-hosted-saas-app"}
+          image: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app:1.0.0 # {"$imagepolicy": "example-self-hosted-saas-app:example-self-hosted-saas-app"}
           ports:
             - containerPort: 3000
           resources:
