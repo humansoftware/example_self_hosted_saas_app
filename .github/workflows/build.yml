@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Log in to Harbor
         run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
