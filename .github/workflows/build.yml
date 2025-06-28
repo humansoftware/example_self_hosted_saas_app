@@ -19,14 +19,27 @@ jobs:
       - name: Log in to Harbor
         run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
 
+      - name: Get and increment latest tag
+        id: semver
+        run: |
+          LATEST_TAG=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_TAG="1.0.0"
+          else
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG"
+            PATCH=$((PATCH + 1))
+            NEW_TAG="$MAJOR.$MINOR.$PATCH"
+          fi
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
-          docker build -t $IMAGE_NAME:${{ github.sha }} .
-          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+          docker build -t $IMAGE_NAME:${NEW_TAG} .
+          docker tag $IMAGE_NAME:${NEW_TAG} $IMAGE_NAME:latest
 
-      - name: Push Docker image (sha)
+      - name: Push Docker image (new tag)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: docker push $IMAGE_NAME:${{ github.sha }}
+        run: docker push $IMAGE_NAME:${NEW_TAG}
 
       - name: Push Docker image (latest)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

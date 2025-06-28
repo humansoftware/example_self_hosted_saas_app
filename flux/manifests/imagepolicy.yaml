@@ -7,5 +7,5 @@ spec:
   imageRepositoryRef:
     name: example-self-hosted-saas-app
   policy:
-    alphabetical:
-      order: desc
+    semver:
+      range: ">=0.0.0"
