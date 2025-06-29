@@ -144,9 +144,19 @@ export default function Home() {
                 </td>
                 <td className="p-4">
                   {elasticResponse && (
-                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md">
-                      {JSON.stringify(elasticResponse, null, 2)}
-                    </pre>
+                    <>
+                      <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md mb-2">
+                        {JSON.stringify(elasticResponse, null, 2)}
+                      </pre>
+                      {elasticResponse.debugInfo && (
+                        <details className="mt-2">
+                          <summary className="cursor-pointer text-xs text-gray-500">Show debug info</summary>
+                          <pre className="whitespace-pre-wrap text-xs bg-gray-100 p-2 rounded-md">
+                            {JSON.stringify(elasticResponse.debugInfo, null, 2)}
+                          </pre>
+                        </details>
+                      )}
+                    </>
                   )}
                 </td>
               </tr>
