@@ -40,14 +40,3 @@ spec:
           envFrom:
             - secretRef:
                 name: example-self-hosted-saas-app-secrets
-          volumeMounts:
-            - name: elasticsearch-ca-cert
-              mountPath: /etc/ssl/certs/elasticsearch-ca.crt
-              subPath: ca.crt
-      volumes:
-        - name: elasticsearch-ca-cert
-          secret:
-            secretName: example-self-hosted-saas-app-secrets
-            items:
-              - key: ELASTICSEARCH_CA_CRT
-                path: ca.crt

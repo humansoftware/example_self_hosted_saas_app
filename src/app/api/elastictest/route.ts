@@ -1,15 +1,7 @@
-import { NextResponse } from 'next/server';
 import { Client } from '@elastic/elasticsearch';
-import fs from 'fs';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
-    let caCert: string | undefined;
-    try {
-        caCert = fs.readFileSync('/etc/ssl/certs/elasticsearch-ca.crt', 'utf8');
-    } catch (error) {
-        console.error('Failed to read CA certificate:', error);
-    }
-
     const client = new Client({
         node: `http${process.env.ELASTICSEARCH_SECURE === 'true' ? 's' : ''}://${process.env.ELASTICSEARCH_HOST}:${process.env.ELASTICSEARCH_PORT}`,
         auth: {
@@ -17,7 +9,7 @@ export async function GET() {
             password: process.env.ELASTICSEARCH_PASSWORD!
         },
         tls: {
-            ca: caCert
+            ca: process.env.ELASTICSEARCH_CA_CRT
         }
     });
 
