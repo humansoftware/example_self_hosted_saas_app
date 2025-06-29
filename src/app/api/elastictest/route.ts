@@ -9,15 +9,18 @@ export async function GET() {
         ELASTICSEARCH_PORT: process.env.ELASTICSEARCH_PORT,
         ELASTICSEARCH_USER: process.env.ELASTICSEARCH_USER,
         ELASTICSEARCH_PASSWORD: process.env.ELASTICSEARCH_PASSWORD ? '***' : undefined,
-        ELASTICSEARCH_CA_CRT_length: process.env.ELASTICSEARCH_CA_CRT?.length,
-        ELASTICSEARCH_CA_CRT_start: process.env.ELASTICSEARCH_CA_CRT?.slice(0, 40),
-        ELASTICSEARCH_CA_CRT_end: process.env.ELASTICSEARCH_CA_CRT?.slice(-40),
+        ELASTICSEARCH_CA_CRT_BASE64_length: process.env.ELASTICSEARCH_CA_CRT_BASE64?.length,
+        ELASTICSEARCH_CA_CRT_BASE64_start: process.env.ELASTICSEARCH_CA_CRT_BASE64?.slice(0, 40),
+        ELASTICSEARCH_CA_CRT_BASE64_end: process.env.ELASTICSEARCH_CA_CRT_BASE64?.slice(-40),
     };
 
-    const caEnv = process.env.ELASTICSEARCH_CA_CRT;
-    console.log('CA cert raw value:', caEnv);
-    console.log('CA cert split by "\\n":', caEnv?.split('\\n').length, 'lines');
-    console.log('CA cert split by "\n":', caEnv?.split('\n').length, 'lines');
+    // Decode the base64 CA cert
+    const caCert = process.env.ELASTICSEARCH_CA_CRT_BASE64
+        ? Buffer.from(process.env.ELASTICSEARCH_CA_CRT_BASE64, 'base64').toString('utf-8')
+        : undefined;
+    console.log('Decoded CA cert:', caCert);
+    console.log('Decoded CA cert split by "\\n":', caCert?.split('\\n').length, 'lines');
+    console.log('Decoded CA cert split by "\n":', caCert?.split('\n').length, 'lines');
 
     let client;
     let clientConfig;
@@ -29,7 +32,7 @@ export async function GET() {
                 password: process.env.ELASTICSEARCH_PASSWORD!
             },
             tls: {
-                ca: process.env.ELASTICSEARCH_CA_CRT
+                ca: caCert
             }
         };
         // Debug: log the client config (mask password)
