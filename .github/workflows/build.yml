@@ -6,31 +6,42 @@ on:
   pull_request:
 
 jobs:
-  build:
-    runs-on: self-hosted
-    env:
-      IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
-
-
+  precheck:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.skip_build }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           fetch-tags: true
-
-      - name: Skip if commit is from FluxCD Bot
+      - name: Check if build should be skipped
+        id: skip_check
         run: |
           AUTHOR="$(git log -1 --pretty=format:'%an')"
           MESSAGE="$(git log -1 --pretty=%B)"
           if [[ "$AUTHOR" == "FluxCD Bot" ]] || [[ "$MESSAGE" == Update\ image\ to* ]]; then
+            echo "skip_build=true" >> $GITHUB_OUTPUT
             echo "Commit is from FluxCD Bot or is a Flux image update. Skipping build."
-            exit 0
+          else
+            echo "skip_build=false" >> $GITHUB_OUTPUT
           fi
 
+  build:
+    needs: precheck
+    if: needs.precheck.outputs.should_skip != 'true'
+    runs-on: self-hosted
+    env:
+      IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: Log in to Harbor
         run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
-
       - name: Get and increment latest tag
         id: semver
         run: |
@@ -45,20 +56,16 @@ jobs:
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Latest tag: $LATEST_TAG"
           echo "New tag: $NEW_TAG"
-
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:${NEW_TAG} .
           docker tag $IMAGE_NAME:${NEW_TAG} $IMAGE_NAME:latest
-
       - name: Push Docker image (new tag)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_NAME:${NEW_TAG}
-
       - name: Push Docker image (latest)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_NAME:latest
-
       - name: Install kubectl
         run: |
           KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
@@ -66,10 +73,8 @@ jobs:
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
-
       - name: Run example kubectl command if you don't want to use flux
         run: kubectl get pods -n example-self-hosted-saas-app
-
       - name: Create and push new git tag
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
