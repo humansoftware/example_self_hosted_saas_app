@@ -6,6 +6,8 @@ export default function Home() {
   const [apiResponse, setApiResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [dbResponse, setDbResponse] = useState<any>(null);
+  const [cassandraResponse, setCassandraResponse] = useState<any>(null);
+  const [elasticResponse, setElasticResponse] = useState<any>(null);
 
   const testApi = async () => {
     setLoading(true);
@@ -31,9 +33,33 @@ export default function Home() {
     setLoading(false);
   };
 
+  const testCassandra = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/cassandratest');
+      const data = await response.json();
+      setCassandraResponse(data);
+    } catch (error) {
+      setCassandraResponse({ error: 'Failed to fetch from Cassandra API' });
+    }
+    setLoading(false);
+  };
+
+  const testElastic = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/elastictest');
+      const data = await response.json();
+      setElasticResponse(data);
+    } catch (error) {
+      setElasticResponse({ error: 'Failed to fetch from Elastic API' });
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gray-50">
-      <main className="max-w-2xl w-full space-y-8">
+      <main className="max-w-4xl w-full space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Welcome to Your Self-Hosted Application!
@@ -44,39 +70,88 @@ export default function Home() {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <button
-            onClick={testApi}
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-          >
-            {loading ? 'Testing API...' : 'Test API Connection'}
-          </button>
-
-          <button
-            onClick={testDb}
-            disabled={loading}
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors disabled:bg-green-400 mt-4"
-          >
-            {loading ? 'Testing DB...' : 'Test DB Connection'}
-          </button>
-
-          {apiResponse && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-md">
-              <h2 className="text-lg font-semibold mb-2">API Response:</h2>
-              <pre className="whitespace-pre-wrap text-sm">
-                {JSON.stringify(apiResponse, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          {dbResponse && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-md">
-              <h2 className="text-lg font-semibold mb-2">DB API Response:</h2>
-              <pre className="whitespace-pre-wrap text-sm">
-                {JSON.stringify(dbResponse, null, 2)}
-              </pre>
-            </div>
-          )}
+          <table className="w-full">
+            <thead>
+              <tr className="text-left">
+                <th className="p-4">Test</th>
+                <th className="p-4">Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-t">
+                <td className="p-4">
+                  <button
+                    onClick={testApi}
+                    disabled={loading}
+                    className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+                  >
+                    {loading ? 'Testing...' : 'Test API'}
+                  </button>
+                </td>
+                <td className="p-4">
+                  {apiResponse && (
+                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md">
+                      {JSON.stringify(apiResponse, null, 2)}
+                    </pre>
+                  )}
+                </td>
+              </tr>
+              <tr className="border-t">
+                <td className="p-4">
+                  <button
+                    onClick={testDb}
+                    disabled={loading}
+                    className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors disabled:bg-green-400"
+                  >
+                    {loading ? 'Testing...' : 'Test DB'}
+                  </button>
+                </td>
+                <td className="p-4">
+                  {dbResponse && (
+                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md">
+                      {JSON.stringify(dbResponse, null, 2)}
+                    </pre>
+                  )}
+                </td>
+              </tr>
+              <tr className="border-t">
+                <td className="p-4">
+                  <button
+                    onClick={testCassandra}
+                    disabled={loading}
+                    className="bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 transition-colors disabled:bg-yellow-400"
+                  >
+                    {loading ? 'Testing...' : 'Test Cassandra'}
+                  </button>
+                </td>
+                <td className="p-4">
+                  {cassandraResponse && (
+                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md">
+                      {JSON.stringify(cassandraResponse, null, 2)}
+                    </pre>
+                  )}
+                </td>
+              </tr>
+              <tr className="border-t">
+                <td className="p-4">
+                  <button
+                    onClick={testElastic}
+                    disabled={loading}
+                    className="bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition-colors disabled:bg-teal-400"
+                  >
+                    {loading ? 'Testing...' : 'Test Elasticsearch'}
+                  </button>
+                </td>
+                <td className="p-4">
+                  {elasticResponse && (
+                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md">
+                      {JSON.stringify(elasticResponse, null, 2)}
+                    </pre>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </main>
     </div>
