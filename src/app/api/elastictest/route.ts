@@ -14,6 +14,11 @@ export async function GET() {
         ELASTICSEARCH_CA_CRT_end: process.env.ELASTICSEARCH_CA_CRT?.slice(-40),
     };
 
+    const caEnv = process.env.ELASTICSEARCH_CA_CRT;
+    console.log('CA cert raw value:', caEnv);
+    console.log('CA cert split by "\\n":', caEnv?.split('\\n').length, 'lines');
+    console.log('CA cert split by "\n":', caEnv?.split('\n').length, 'lines');
+
     let client;
     let clientConfig;
     try {
