@@ -35,7 +35,7 @@ export async function GET() {
         return NextResponse.json({
             message: 'Failed to initialize Elasticsearch client',
             debugInfo,
-            error: initError && (initError.stack || JSON.stringify(initError)),
+            error: (initError instanceof Error && initError.stack) ? initError.stack : JSON.stringify(initError),
             status: 'error',
             timestamp: new Date().toISOString(),
         }, { status: 500 });
