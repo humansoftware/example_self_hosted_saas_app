@@ -14,11 +14,13 @@ export async function GET() {
 
     try {
         await client.connect();
-        const result = await client.execute('SELECT * FROM system.local');
+        const result = await client.execute('SELECT cluster_name, release_version, cql_version FROM system.local');
         await client.shutdown();
         return NextResponse.json({
             message: 'Cassandra connection successful!',
-            dbResult: result.rows,
+            clusterName: result.rows[0].cluster_name,
+            cassandraVersion: result.rows[0].release_version,
+            cqlVersion: result.rows[0].cql_version,
             status: 'success',
             timestamp: new Date().toISOString(),
         });
