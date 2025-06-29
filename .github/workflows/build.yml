@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.skip_build }}
+      harbor_secret_set: ${{ steps.check_harbor_secret.outputs.harbor_secret_set }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,10 +28,26 @@ jobs:
           else
             echo "skip_build=false" >> $GITHUB_OUTPUT
           fi
+      - name: Check Harbor Secret
+        id: check_harbor_secret
+        run: |
+          if [ -z "${{ secrets.HARBOR_SECRET }}" ]; then
+            echo "::error::HARBOR_SECRET is not set.\nTo set it:"
+            echo "1. Go to your repository on GitHub."
+            echo "2. Click on 'Settings' > 'Secrets and variables' > 'Actions'."
+            echo "3. Click 'New repository secret'."
+            echo "4. Name it HARBOR_SECRET and paste your Harbor password or token as the value."
+            echo "5. Save the secret."
+            echo "harbor_secret_set=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "HARBOR_SECRET is set."
+            echo "harbor_secret_set=true" >> $GITHUB_OUTPUT
+          fi
 
   build:
     needs: precheck
-    if: needs.precheck.outputs.should_skip != 'true'
+    if: needs.precheck.outputs.should_skip != 'true' && needs.precheck.outputs.harbor_secret_set == 'true'
     runs-on: self-hosted
     env:
       IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
