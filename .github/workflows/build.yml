@@ -19,6 +19,15 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: Skip if commit is from FluxCD Bot
+        run: |
+          AUTHOR="$(git log -1 --pretty=format:'%an')"
+          MESSAGE="$(git log -1 --pretty=%B)"
+          if [[ "$AUTHOR" == "FluxCD Bot" ]] || [[ "$MESSAGE" == Update\ image\ to* ]]; then
+            echo "Commit is from FluxCD Bot or is a Flux image update. Skipping build."
+            exit 0
+          fi
+
       - name: Log in to Harbor
         run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
 
