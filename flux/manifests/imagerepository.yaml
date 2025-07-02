@@ -1,8 +1,0 @@
-apiVersion: image.toolkit.fluxcd.io/v1beta2
-kind: ImageRepository
-metadata:
-  name: example-self-hosted-saas-app
-  namespace: example-self-hosted-saas-app
-spec:
-  image: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
-  interval: 1m0s
