@@ -22,7 +22,7 @@ jobs:
         run: |
           AUTHOR="$(git log -1 --pretty=format:'%an')"
           MESSAGE="$(git log -1 --pretty=%B)"
-          if [[ "$AUTHOR" == "FluxCD Bot" ]] || [[ "$MESSAGE" == Update\ image\ to* ]]; then
+          if [[ "$AUTHOR" == "FluxCD Bot" ]] || [[ "$MESSAGE" == "Update image to*" ]]; then
             echo "skip_build=true" >> $GITHUB_OUTPUT
             echo "Commit is from FluxCD Bot or is a Flux image update. Skipping build."
           else
@@ -62,13 +62,15 @@ jobs:
       - name: Get and increment latest tag
         id: semver
         run: |
-          LATEST_TAG=$(git tag --list --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+          LATEST_TAG=$(git tag --list --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
           if [ -z "$LATEST_TAG" ]; then
-            NEW_TAG="1.0.0"
+            NEW_TAG="v1.0.0"
           else
-            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG"
+            # Remove 'v' prefix for parsing
+            LATEST_TAG_NUMERIC=${LATEST_TAG#v}
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG_NUMERIC"
             PATCH=$((PATCH + 1))
-            NEW_TAG="$MAJOR.$MINOR.$PATCH"
+            NEW_TAG="v$MAJOR.$MINOR.$PATCH"
           fi
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
           echo "Latest tag: $LATEST_TAG"
