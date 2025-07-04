@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'The tag to build'
-        required: false
+        description: 'Workflow to manually rebuild the image for a specific tag'
+        required: true
 
 jobs:
   precheck:
@@ -62,6 +62,10 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - name: Checkout tag if provided
+        if: github.event.inputs.tag != ''
+        run: |
+          git checkout ${{ github.event.inputs.tag }}
       - name: Log in to Harbor
         run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
       - name: Get and increment latest tag
