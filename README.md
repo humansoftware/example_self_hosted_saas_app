@@ -7,13 +7,13 @@ This repository demonstrates how to deploy a SaaS application to a self-hosted k
 This repository contains:
 - Kubernetes deployment configurations that work with the self-hosted infrastructure
 - Traefik ingress setup with proper caching strategies
-- Flux configuration for GitOps deployment
+- **ArgoCD configuration for GitOps deployment**
 - Example application (Next.js) that can be replaced with any other framework
 
 ## Prerequisites
 
 - A k3s cluster set up using [self-host-saas-k3s](https://github.com/humansoftware/self-host-saas-k3s)
-- Flux installed in your cluster
+- **ArgoCD installed in your cluster**
 - A container registry (the infrastructure provides Harbor)
 - A domain name pointing to your cluster
 
@@ -21,14 +21,12 @@ This repository contains:
 
 ```
 .
-├── k8s/                    # Kubernetes manifests
+├── deployment/                    # Kubernetes manifests
 │   ├── deployment.yaml    # Application deployment
 │   ├── service.yaml       # Kubernetes service
 │   ├── ingress.yaml       # Traefik ingress configuration
 │   ├── middleware.yaml    # Traefik middleware for caching
 │   └── kustomization.yaml # Kustomize configuration
-├── flux/                  # Flux configuration
-│   └── kustomization.yaml # Flux kustomization
 └── Dockerfile            # Container definition
 ```
 
@@ -124,7 +122,9 @@ spec:
    kubectl apply -k k8s/
    ```
 
-4. Flux will automatically sync the changes to your cluster
+4. **Register your application manifests in ArgoCD**
+   - Create an ArgoCD Application resource pointing to this repository and the `k8s/` directory.
+   - ArgoCD will automatically sync the changes to your cluster.
 
 ## Integration with Infrastructure
 
@@ -132,7 +132,7 @@ Your application will automatically benefit from:
 
 - **Traefik**: For ingress and TLS termination
 - **cert-manager**: For automatic SSL certificate management
-- **Flux**: For GitOps-based deployment
+- **ArgoCD**: For GitOps-based deployment
 - **Harbor**: For container registry
 - **Longhorn**: For persistent storage
 - **Prometheus/Grafana**: For monitoring

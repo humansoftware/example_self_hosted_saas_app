@@ -14,7 +14,6 @@ jobs:
   precheck:
     runs-on: ubuntu-latest
     outputs:
-      should_skip: ${{ steps.skip_check.outputs.skip_build }}
       harbor_secret_set: ${{ steps.check_harbor_secret.outputs.harbor_secret_set }}
     steps:
       - name: Checkout
@@ -22,17 +21,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Check if build should be skipped
-        id: skip_check
-        run: |
-          AUTHOR="$(git log -1 --pretty=format:'%an')"
-          MESSAGE="$(git log -1 --pretty=%B)"
-          if [[ "$AUTHOR" == "FluxCD Bot" ]] || [[ "$MESSAGE" == "Update image to*" ]]; then
-            echo "skip_build=true" >> $GITHUB_OUTPUT
-            echo "Commit is from FluxCD Bot or is a Flux image update. Skipping build."
-          else
-            echo "skip_build=false" >> $GITHUB_OUTPUT
-          fi
       - name: Check Harbor Secret
         id: check_harbor_secret
         run: |
@@ -52,7 +40,7 @@ jobs:
 
   build:
     needs: precheck
-    if: needs.precheck.outputs.should_skip != 'true' && needs.precheck.outputs.harbor_secret_set == 'true'
+    if: needs.precheck.outputs.harbor_secret_set == 'true'
     runs-on: self-hosted
     env:
       IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
@@ -106,7 +94,7 @@ jobs:
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
-      - name: Run example kubectl command if you don't want to use flux
+      - name: Run example kubectl command if you don't want to use argoCD
         run: kubectl get pods -n example-self-hosted-saas-app
       - name: Create and push new git tag
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
