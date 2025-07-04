@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The tag to build'
+        required: false
 
 jobs:
   precheck:
@@ -62,19 +67,24 @@ jobs:
       - name: Get and increment latest tag
         id: semver
         run: |
-          LATEST_TAG=$(git tag --list --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
-          if [ -z "$LATEST_TAG" ]; then
-            NEW_TAG="v1.0.0"
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            NEW_TAG="${{ github.event.inputs.tag }}"
+            echo "Using provided tag: $NEW_TAG"
           else
-            # Remove 'v' prefix for parsing
-            LATEST_TAG_NUMERIC=${LATEST_TAG#v}
-            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG_NUMERIC"
-            PATCH=$((PATCH + 1))
-            NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+            LATEST_TAG=$(git tag --list --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+            if [ -z "$LATEST_TAG" ]; then
+              NEW_TAG="v1.0.0"
+            else
+              # Remove 'v' prefix for parsing
+              LATEST_TAG_NUMERIC=${LATEST_TAG#v}
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG_NUMERIC"
+              PATCH=$((PATCH + 1))
+              NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+            fi
+            echo "Latest tag: $LATEST_TAG"
+            echo "New tag: $NEW_TAG"
           fi
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-          echo "Latest tag: $LATEST_TAG"
-          echo "New tag: $NEW_TAG"
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:${NEW_TAG} .
