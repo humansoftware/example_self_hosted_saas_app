@@ -90,10 +90,10 @@ jobs:
           docker build -t $IMAGE_NAME:${NEW_TAG} .
           docker tag $IMAGE_NAME:${NEW_TAG} $IMAGE_NAME:latest
       - name: Push Docker image (new tag)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_NAME:${NEW_TAG}
       - name: Push Docker image (latest)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: docker push $IMAGE_NAME:latest
       - name: Install kubectl
         run: |
