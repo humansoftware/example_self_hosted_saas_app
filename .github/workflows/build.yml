@@ -77,16 +77,42 @@ jobs:
             echo "New tag: $NEW_TAG"
           fi
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-      - name: Build Docker image
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            debug = true
+            insecure-entitlements = [ "network.host", "security.insecure" ]
+            [registry."harbor.local"]
+              ca = ["/etc/buildkit/certs/harbor.local/ca.crt"]
+              insecure = true
+          driver: docker-container
+          use: true
+      - name: Inspect Buildx builder
         run: |
-          docker build -t $IMAGE_NAME:${NEW_TAG} .
-          docker tag $IMAGE_NAME:${NEW_TAG} $IMAGE_NAME:latest
-      - name: Push Docker image (new tag)
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: docker push $IMAGE_NAME:${NEW_TAG}
-      - name: Push Docker image (latest)
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: docker push $IMAGE_NAME:latest
+          docker buildx inspect --bootstrap
+      - name: Build Docker image with BuildKit cache
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            docker buildx build \
+              --file ./Dockerfile \
+              --tag $IMAGE_NAME:${NEW_TAG} \
+              --tag $IMAGE_NAME:latest \
+              --build-arg ENV_FILE=.env.production \
+              --cache-from=type=registry,ref=$IMAGE_NAME:buildcache \
+              --cache-to=type=registry,ref=$IMAGE_NAME:buildcache,mode=max \
+              --push \
+              .
+          else
+            docker buildx build \
+              --file ./Dockerfile \
+              --tag $IMAGE_NAME:${NEW_TAG} \
+              --tag $IMAGE_NAME:latest \
+              --build-arg ENV_FILE=.env.production \
+              --cache-from=type=registry,ref=$IMAGE_NAME:buildcache \
+              --cache-to=type=registry,ref=$IMAGE_NAME:buildcache,mode=max \
+              .
+          fi
       - name: Install kubectl
         run: |
           KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
