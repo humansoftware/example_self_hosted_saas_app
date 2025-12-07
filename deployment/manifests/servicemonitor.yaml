@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: example-self-hosted-saas-app-servicemonitor
+  namespace: example-self-hosted-saas-app
+  labels:
+    k8s-app: example-self-hosted-saas-app
+spec:
+  selector:
+    matchLabels:
+      app: example-self-hosted-saas-app
+  namespaceSelector:
+    any: false
+    matchNames:
+      - example-self-hosted-saas-app
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scheme: http
