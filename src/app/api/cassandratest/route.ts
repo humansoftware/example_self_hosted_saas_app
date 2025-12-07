@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
 import cassandra from 'cassandra-driver';
+import { NextResponse } from 'next/server';
+import { markFailure, markSuccess } from '../../../lib/metrics';
 
 export async function GET() {
     const client = new cassandra.Client({
@@ -16,6 +17,7 @@ export async function GET() {
         await client.connect();
         const result = await client.execute('SELECT cluster_name, release_version, cql_version FROM system.local');
         await client.shutdown();
+        markSuccess('/api/cassandratest');
         return NextResponse.json({
             message: 'Cassandra connection successful!',
             clusterName: result.rows[0].cluster_name,
@@ -25,6 +27,7 @@ export async function GET() {
             timestamp: new Date().toISOString(),
         });
     } catch (error: any) {
+        markFailure('/api/cassandratest');
         return NextResponse.json({
             message: 'Cassandra connection failed',
             error: error && (error.stack || JSON.stringify(error)),

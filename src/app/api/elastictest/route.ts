@@ -1,5 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { NextResponse } from 'next/server';
+import { markFailure, markSuccess } from '../../../lib/metrics';
 
 export async function GET() {
     // Decode the base64 CA cert
@@ -31,6 +32,7 @@ export async function GET() {
 
     try {
         const result = await client.info();
+        markSuccess('/api/elastictest');
         return NextResponse.json({
             message: 'Elasticsearch connection successful!',
             dbResult: result,
@@ -38,6 +40,7 @@ export async function GET() {
             timestamp: new Date().toISOString(),
         });
     } catch (error: any) {
+        markFailure('/api/elastictest');
         return NextResponse.json({
             message: 'Elasticsearch connection failed',
             status: 'error',

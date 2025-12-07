@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Client } from 'pg';
+import { markFailure, markSuccess } from '../../../lib/metrics';
 
 export async function GET() {
     // Read DB connection info from environment variables
@@ -16,6 +17,7 @@ export async function GET() {
         // Simple query to test DB connection
         const result = await client.query('SELECT 1 as ok');
         await client.end();
+        markSuccess('/api/dbtest');
         return NextResponse.json({
             message: 'Database connection successful!',
             dbResult: result.rows,
@@ -23,6 +25,7 @@ export async function GET() {
             timestamp: new Date().toISOString(),
         });
     } catch (error: any) {
+        markFailure('/api/dbtest');
         return NextResponse.json({
             message: 'Database connection failed',
             error: error && (error.stack || JSON.stringify(error)),

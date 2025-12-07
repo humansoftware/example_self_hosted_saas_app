@@ -7,7 +7,7 @@ metadata:
 data:
   dashboard.json: |
     {
-      "title": "Example App - System Metrics",
+      "title": "example_self_hosted_saas_app- System Metrics",
       "panels": [
         {
           "type": "graph",
