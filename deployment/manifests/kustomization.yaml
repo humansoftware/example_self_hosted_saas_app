@@ -8,6 +8,7 @@ resources:
   - middleware.yaml
   - servicemonitor.yaml
   - service_alarm_triggers.yaml
+  - alertmanager-config-email.yaml
   - grafana-dashboard-system.yaml
 
 namespace: example-self-hosted-saas-app
