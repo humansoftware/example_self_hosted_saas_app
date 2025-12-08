@@ -7,7 +7,7 @@ resources:
   - ingress.yaml
   - middleware.yaml
   - servicemonitor.yaml
-  - service_alarms.yaml
+  - service_alarm_triggers.yaml
   - grafana-dashboard-system.yaml
 
 namespace: example-self-hosted-saas-app
