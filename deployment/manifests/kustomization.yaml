@@ -6,6 +6,7 @@ resources:
   - service.yaml
   - ingress.yaml
   - middleware.yaml
+  - servicemonitor.yaml
   - grafana-dashboard-system.yaml
 
 namespace: example-self-hosted-saas-app
