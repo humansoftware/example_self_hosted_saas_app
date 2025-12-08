@@ -8,6 +8,7 @@ data:
   dashboard.json: |
     {
       "title": "example_self_hosted_saas_app - System & App Metrics",
+      "tags": ["example-self-hosted-saas-app"],
       "panels": [
         {
           "type": "graph",
@@ -15,7 +16,12 @@ data:
           "targets": [
             { "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"example-self-hosted-saas-app\"}[5m]))", "refId": "A" }
           ],
-          "id": 1
+          "id": 1,
+          "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         },
         {
           "type": "graph",
@@ -23,16 +29,21 @@ data:
           "targets": [
             { "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"example-self-hosted-saas-app\"})", "refId": "B" }
           ],
-          "id": 2
+          "id": 2,
+          "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         },
-        
         {
           "type": "stat",
           "title": "Service Up (Prometheus 'up')",
           "targets": [
             { "expr": "up{job=\"example-self-hosted-saas-app\"}", "refId": "C" }
           ],
-          "id": 3
+          "id": 3,
+          "gridPos": { "x": 0, "y": 8, "w": 6, "h": 4 }
         },
         {
           "type": "stat",
@@ -40,7 +51,8 @@ data:
           "targets": [
             { "expr": "kube_deployment_status_replicas_available{deployment=\"example-self-hosted-saas-app\",namespace=\"example-self-hosted-saas-app\"}", "refId": "D" }
           ],
-          "id": 4
+          "id": 4,
+          "gridPos": { "x": 6, "y": 8, "w": 6, "h": 4 }
         },
         {
           "type": "graph",
@@ -48,7 +60,12 @@ data:
           "targets": [
             { "expr": "example_app_probe_up", "refId": "E" }
           ],
-          "id": 5
+          "id": 5,
+          "gridPos": { "x": 0, "y": 12, "w": 12, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 0,
+          "points": false
         },
         {
           "type": "graph",
@@ -56,7 +73,12 @@ data:
           "targets": [
             { "expr": "sum by (exported_endpoint) (rate(example_app_probe_total{result=\"success\"}[5m]))", "refId": "F" }
           ],
-          "id": 6
+          "id": 6,
+          "gridPos": { "x": 12, "y": 8, "w": 12, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         },
         {
           "type": "graph",
@@ -64,31 +86,57 @@ data:
           "targets": [
             { "expr": "sum by (exported_endpoint) (rate(example_app_probe_total{result=\"failure\"}[5m]))", "refId": "G" }
           ],
-          "id": 7
+          "id": 7,
+          "gridPos": { "x": 0, "y": 18, "w": 12, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         },
         {
-          "type": "stat",
+          "type": "graph",
           "title": "DB Probe Up",
           "targets": [
             { "expr": "example_app_probe_up{exported_endpoint=\"db\"}", "refId": "E1" }
           ],
-          "id": 14
+          "id": 14,
+          "gridPos": { "x": 12, "y": 14, "w": 6, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 0,
+          "points": false,
+          "steppedLine": true,
+          "yaxes": [{"format":"short","min":0,"max":1},{"format":"short"}]
         },
         {
-          "type": "stat",
+          "type": "graph",
           "title": "Elasticsearch Probe Up",
           "targets": [
             { "expr": "example_app_probe_up{exported_endpoint=\"es\"}", "refId": "E2" }
           ],
-          "id": 15
+          "id": 15,
+          "gridPos": { "x": 18, "y": 14, "w": 6, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 0,
+          "points": false,
+          "steppedLine": true,
+          "yaxes": [{"format":"short","min":0,"max":1},{"format":"short"}]
         },
         {
-          "type": "stat",
+          "type": "graph",
           "title": "Cassandra Probe Up",
           "targets": [
             { "expr": "example_app_probe_up{exported_endpoint=\"cassandra\"}", "refId": "E3" }
           ],
-          "id": 16
+          "id": 16,
+          "gridPos": { "x": 12, "y": 20, "w": 6, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 0,
+          "points": false,
+          "steppedLine": true,
+          "yaxes": [{"format":"short","min":0,"max":1},{"format":"short"}]
         },
         {
           "type": "graph",
@@ -96,7 +144,12 @@ data:
           "targets": [
             { "expr": "rate(example_app_probe_total{exported_endpoint=\"db\",result=\"success\"}[5m])", "refId": "E4" }
           ],
-          "id": 17
+          "id": 17,
+          "gridPos": { "x": 18, "y": 20, "w": 6, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         },
         {
           "type": "graph",
@@ -104,7 +157,12 @@ data:
           "targets": [
             { "expr": "rate(example_app_probe_total{exported_endpoint=\"es\",result=\"success\"}[5m])", "refId": "E5" }
           ],
-          "id": 18
+          "id": 18,
+          "gridPos": { "x": 12, "y": 26, "w": 6, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         },
         {
           "type": "graph",
@@ -112,7 +170,12 @@ data:
           "targets": [
             { "expr": "rate(example_app_probe_total{exported_endpoint=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
           ],
-          "id": 19
+          "id": 19,
+          "gridPos": { "x": 18, "y": 26, "w": 6, "h": 6 },
+          "lines": true,
+          "linewidth": 2,
+          "fill": 1,
+          "points": false
         }
       ],
       "schemaVersion": 16,
