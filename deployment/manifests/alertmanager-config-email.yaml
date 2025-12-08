@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: example-email-config
+  namespace: example-self-hosted-saas-app
+  labels:
+    k8s-app: example-self-hosted-saas-app
+spec:
+  route:
+    groupBy: ["alertname", "severity"]
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 3h
+    matchers:
+      - 'namespace="example-self-hosted-saas-app"'
+    receiver: "email-receiver"
+  receivers:
+    - name: "email-receiver"
+      emailConfigs:
+        - to: "alerts@example.mvalle.com"
+          from: "noreply@example.mvalle.com"
+          smarthost: "mailu-front.mailu.svc.cluster.local:25"
+          authUsername:
+            name: example-self-hosted-saas-app-secrets
+            key: SMTP_USER
+          authPassword:
+            name: example-self-hosted-saas-app-secrets
+            key: SMTP_PASSWORD
+          requireTLS: false
