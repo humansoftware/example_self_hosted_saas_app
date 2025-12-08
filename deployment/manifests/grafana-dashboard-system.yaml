@@ -54,7 +54,7 @@ data:
           "type": "graph",
           "title": "Probe Success Rate (5m)",
           "targets": [
-            { "expr": "sum by (endpoint) (rate(example_app_probe_total{result=\"success\"}[5m]))", "refId": "F" }
+            { "expr": "sum by (exported_endpoint) (rate(example_app_probe_total{result=\"success\"}[5m]))", "refId": "F" }
           ],
           "id": 6
         },
@@ -62,7 +62,7 @@ data:
           "type": "graph",
           "title": "Probe Failure Rate (5m)",
           "targets": [
-            { "expr": "sum by (endpoint) (rate(example_app_probe_total{result=\"failure\"}[5m]))", "refId": "G" }
+            { "expr": "sum by (exported_endpoint) (rate(example_app_probe_total{result=\"failure\"}[5m]))", "refId": "G" }
           ],
           "id": 7
         },
@@ -70,7 +70,7 @@ data:
           "type": "stat",
           "title": "DB Probe Up",
           "targets": [
-            { "expr": "example_app_probe_up{endpoint=\"db\"}", "refId": "E1" }
+            { "expr": "example_app_probe_up{exported_endpoint=\"db\"}", "refId": "E1" }
           ],
           "id": 14
         },
@@ -78,7 +78,7 @@ data:
           "type": "stat",
           "title": "Elasticsearch Probe Up",
           "targets": [
-            { "expr": "example_app_probe_up{endpoint=\"es\"}", "refId": "E2" }
+            { "expr": "example_app_probe_up{exported_endpoint=\"es\"}", "refId": "E2" }
           ],
           "id": 15
         },
@@ -86,7 +86,7 @@ data:
           "type": "stat",
           "title": "Cassandra Probe Up",
           "targets": [
-            { "expr": "example_app_probe_up{endpoint=\"cassandra\"}", "refId": "E3" }
+            { "expr": "example_app_probe_up{exported_endpoint=\"cassandra\"}", "refId": "E3" }
           ],
           "id": 16
         },
@@ -94,7 +94,7 @@ data:
           "type": "graph",
           "title": "DB Probe Success Rate (5m)",
           "targets": [
-            { "expr": "rate(example_app_probe_total{endpoint=\"db\",result=\"success\"}[5m])", "refId": "E4" }
+            { "expr": "rate(example_app_probe_total{exported_endpoint=\"db\",result=\"success\"}[5m])", "refId": "E4" }
           ],
           "id": 17
         },
@@ -102,7 +102,7 @@ data:
           "type": "graph",
           "title": "Elasticsearch Probe Success Rate (5m)",
           "targets": [
-            { "expr": "rate(example_app_probe_total{endpoint=\"es\",result=\"success\"}[5m])", "refId": "E5" }
+            { "expr": "rate(example_app_probe_total{exported_endpoint=\"es\",result=\"success\"}[5m])", "refId": "E5" }
           ],
           "id": 18
         },
@@ -110,7 +110,7 @@ data:
           "type": "graph",
           "title": "Cassandra Probe Success Rate (5m)",
           "targets": [
-            { "expr": "rate(example_app_probe_total{endpoint=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
+            { "expr": "rate(example_app_probe_total{exported_endpoint=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
           ],
           "id": 19
         }
