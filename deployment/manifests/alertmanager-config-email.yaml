@@ -12,7 +12,9 @@ spec:
     groupInterval: 5m
     repeatInterval: 3h
     matchers:
-      - 'namespace="example-self-hosted-saas-app"'
+      - name: "namespace"
+        value: "example-self-hosted-saas-app"
+        matchType: "="
     receiver: "email-receiver"
   receivers:
     - name: "email-receiver"
