@@ -4,6 +4,7 @@ metadata:
   name: example-self-hosted-saas-app-servicemonitor
   namespace: example-self-hosted-saas-app
   labels:
+    release: kube-prom-stack
     k8s-app: example-self-hosted-saas-app
 spec:
   selector:
