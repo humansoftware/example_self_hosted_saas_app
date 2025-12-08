@@ -22,11 +22,8 @@ spec:
         - to: "alerts@example.mvalle.com"
           from: "noreply@example.mvalle.com"
           smarthost: "mailu-front.mailu.svc.cluster.local:25"
-          auth:
-            username:
-              name: example-self-hosted-saas-app-secrets
-              key: SMTP_USER
-            password:
-              name: example-self-hosted-saas-app-secrets
-              key: SMTP_PASSWORD
+          authUsername: "admin"
+          authPassword:
+            name: example-self-hosted-saas-app-secrets
+            key: SMTP_PASSWORD
           requireTLS: false
