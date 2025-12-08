@@ -7,16 +7,13 @@ metadata:
 data:
   dashboard.json: |
     {
-      "title": "example_self_hosted_saas_app- System Metrics",
+      "title": "example_self_hosted_saas_app - System & App Metrics",
       "panels": [
         {
           "type": "graph",
           "title": "CPU (rate per pod)",
           "targets": [
-            {
-              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"example-self-hosted-saas-app\"}[5m]))",
-              "refId": "A"
-            }
+            { "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"example-self-hosted-saas-app\"}[5m]))", "refId": "A" }
           ],
           "id": 1
         },
@@ -24,14 +21,100 @@ data:
           "type": "graph",
           "title": "Memory (working set)",
           "targets": [
-            {
-              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"example-self-hosted-saas-app\"})",
-              "refId": "B"
-            }
+            { "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"example-self-hosted-saas-app\"})", "refId": "B" }
           ],
           "id": 2
+        },
+        
+        {
+          "type": "stat",
+          "title": "Service Up (Prometheus 'up')",
+          "targets": [
+            { "expr": "up{job=\"example-self-hosted-saas-app\"}", "refId": "C" }
+          ],
+          "id": 3
+        },
+        {
+          "type": "stat",
+          "title": "Available Replicas",
+          "targets": [
+            { "expr": "kube_deployment_status_replicas_available{deployment=\"example-self-hosted-saas-app\",namespace=\"example-self-hosted-saas-app\"}", "refId": "D" }
+          ],
+          "id": 4
+        },
+        {
+          "type": "graph",
+          "title": "Probe Up by Endpoint",
+          "targets": [
+            { "expr": "example_app_probe_up", "refId": "E" }
+          ],
+          "id": 5
+        },
+        {
+          "type": "graph",
+          "title": "Probe Success Rate (5m)",
+          "targets": [
+            { "expr": "sum by (endpoint) (rate(example_app_probe_total{result=\"success\"}[5m]))", "refId": "F" }
+          ],
+          "id": 6
+        },
+        {
+          "type": "graph",
+          "title": "Probe Failure Rate (5m)",
+          "targets": [
+            { "expr": "sum by (endpoint) (rate(example_app_probe_total{result=\"failure\"}[5m]))", "refId": "G" }
+          ],
+          "id": 7
+        },
+        {
+          "type": "stat",
+          "title": "DB Probe Up",
+          "targets": [
+            { "expr": "example_app_probe_up{endpoint=\"db\"}", "refId": "E1" }
+          ],
+          "id": 14
+        },
+        {
+          "type": "stat",
+          "title": "Elasticsearch Probe Up",
+          "targets": [
+            { "expr": "example_app_probe_up{endpoint=\"es\"}", "refId": "E2" }
+          ],
+          "id": 15
+        },
+        {
+          "type": "stat",
+          "title": "Cassandra Probe Up",
+          "targets": [
+            { "expr": "example_app_probe_up{endpoint=\"cassandra\"}", "refId": "E3" }
+          ],
+          "id": 16
+        },
+        {
+          "type": "graph",
+          "title": "DB Probe Success Rate (5m)",
+          "targets": [
+            { "expr": "rate(example_app_probe_total{endpoint=\"db\",result=\"success\"}[5m])", "refId": "E4" }
+          ],
+          "id": 17
+        },
+        {
+          "type": "graph",
+          "title": "Elasticsearch Probe Success Rate (5m)",
+          "targets": [
+            { "expr": "rate(example_app_probe_total{endpoint=\"es\",result=\"success\"}[5m])", "refId": "E5" }
+          ],
+          "id": 18
+        },
+        {
+          "type": "graph",
+          "title": "Cassandra Probe Success Rate (5m)",
+          "targets": [
+            { "expr": "rate(example_app_probe_total{endpoint=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
+          ],
+          "id": 19
         }
       ],
       "schemaVersion": 16,
-      "version": 1
+      "version": 2
     }
