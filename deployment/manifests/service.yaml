@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: example-self-hosted-saas-app
   namespace: example-self-hosted-saas-app
+  labels:
+    app: example-self-hosted-saas-app
 spec:
   selector:
     app: example-self-hosted-saas-app
