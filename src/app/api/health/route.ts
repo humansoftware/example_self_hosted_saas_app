@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { probeCassandra, probeDb, probeEs } from '../../../lib/probes';
+import { jsonResponse } from '../../../lib/response';
 
 export async function GET() {
     try {
@@ -7,10 +7,10 @@ export async function GET() {
         const [dbRes, esRes, cassRes] = await Promise.all([probeDb(), probeEs(), probeCassandra()]);
         const allOk = dbRes && esRes && cassRes;
         if (allOk) {
-            return NextResponse.json({ status: 'ok', db: dbRes, es: esRes, cassandra: cassRes }, { status: 200 });
+            return jsonResponse({ status: 'ok', db: dbRes, es: esRes, cassandra: cassRes }, { status: 200 });
         }
-        return NextResponse.json({ status: 'degraded', db: dbRes, es: esRes, cassandra: cassRes }, { status: 500 });
+        return jsonResponse({ status: 'degraded', db: dbRes, es: esRes, cassandra: cassRes }, { status: 500 });
     } catch (e) {
-        return NextResponse.json({ status: 'error', error: String(e) }, { status: 500 });
+        return jsonResponse({ status: 'error', error: String(e) }, { status: 500 });
     }
 }
