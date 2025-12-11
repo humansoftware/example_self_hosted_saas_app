@@ -25,14 +25,14 @@ spec:
             summary: "example-self-hosted-saas-app HTTP endpoint is down"
             description: "No successful probes for endpoint=http in the last 10 minutes."
         - alert: ExampleServiceDBDown
-          expr: sum_over_time(example_app_probe_up{exported_endpoint="db"}[10m]) == 0
+          expr: sum_over_time(example_app_probe_up{app_metric="db"}[10m]) == 0
           labels:
             severity: critical
           annotations:
             summary: "example-self-hosted-saas-app DB dependency is down"
             description: "No successful probes for endpoint=db in the last 10 minutes."
         - alert: ExampleServiceESDown
-          expr: sum_over_time(example_app_probe_up{exported_endpoint="es"}[10m]) == 0
+          expr: sum_over_time(example_app_probe_up{app_metric="es"}[10m]) == 0
           labels:
             severity: critical
           annotations:

@@ -71,7 +71,7 @@ data:
           "type": "graph",
           "title": "Probe Success Rate (5m)",
           "targets": [
-            { "expr": "sum by (exported_endpoint) (rate(example_app_probe_total{result=\"success\"}[5m]))", "refId": "F" }
+            { "expr": "sum by (app_metric) (rate(example_app_probe_total{result=\"success\"}[5m]))", "refId": "F" }
           ],
           "id": 6,
           "gridPos": { "x": 12, "y": 8, "w": 12, "h": 6 },
@@ -84,7 +84,7 @@ data:
           "type": "graph",
           "title": "Probe Failure Rate (5m)",
           "targets": [
-            { "expr": "sum by (exported_endpoint) (rate(example_app_probe_total{result=\"failure\"}[5m]))", "refId": "G" }
+            { "expr": "sum by (app_metric) (rate(example_app_probe_total{result=\"failure\"}[5m]))", "refId": "G" }
           ],
           "id": 7,
           "gridPos": { "x": 0, "y": 18, "w": 12, "h": 6 },
@@ -97,7 +97,7 @@ data:
           "type": "graph",
           "title": "DB Probe Up",
           "targets": [
-            { "expr": "example_app_probe_up{exported_endpoint=\"db\"}", "refId": "E1" }
+            { "expr": "example_app_probe_up{app_metric=\"db\"}", "refId": "E1" }
           ],
           "id": 14,
           "gridPos": { "x": 12, "y": 14, "w": 6, "h": 6 },
@@ -112,7 +112,7 @@ data:
           "type": "graph",
           "title": "Elasticsearch Probe Up",
           "targets": [
-            { "expr": "example_app_probe_up{exported_endpoint=\"es\"}", "refId": "E2" }
+            { "expr": "example_app_probe_up{app_metric=\"es\"}", "refId": "E2" }
           ],
           "id": 15,
           "gridPos": { "x": 18, "y": 14, "w": 6, "h": 6 },
@@ -127,7 +127,7 @@ data:
           "type": "graph",
           "title": "Cassandra Probe Up",
           "targets": [
-            { "expr": "example_app_probe_up{exported_endpoint=\"cassandra\"}", "refId": "E3" }
+            { "expr": "example_app_probe_up{app_metric=\"cassandra\"}", "refId": "E3" }
           ],
           "id": 16,
           "gridPos": { "x": 12, "y": 20, "w": 6, "h": 6 },
@@ -142,7 +142,7 @@ data:
           "type": "graph",
           "title": "DB Probe Success Rate (5m)",
           "targets": [
-            { "expr": "rate(example_app_probe_total{exported_endpoint=\"db\",result=\"success\"}[5m])", "refId": "E4" }
+            { "expr": "rate(example_app_probe_total{app_metric=\"db\",result=\"success\"}[5m])", "refId": "E4" }
           ],
           "id": 17,
           "gridPos": { "x": 18, "y": 20, "w": 6, "h": 6 },
@@ -155,7 +155,7 @@ data:
           "type": "graph",
           "title": "Elasticsearch Probe Success Rate (5m)",
           "targets": [
-            { "expr": "rate(example_app_probe_total{exported_endpoint=\"es\",result=\"success\"}[5m])", "refId": "E5" }
+            { "expr": "rate(example_app_probe_total{app_metric=\"es\",result=\"success\"}[5m])", "refId": "E5" }
           ],
           "id": 18,
           "gridPos": { "x": 12, "y": 26, "w": 6, "h": 6 },
@@ -168,7 +168,7 @@ data:
           "type": "graph",
           "title": "Cassandra Probe Success Rate (5m)",
           "targets": [
-            { "expr": "rate(example_app_probe_total{exported_endpoint=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
+            { "expr": "rate(example_app_probe_total{app_metric=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
           ],
           "id": 19,
           "gridPos": { "x": 18, "y": 26, "w": 6, "h": 6 },
