@@ -13,11 +13,19 @@ spec:
       labels:
         app: example-self-hosted-saas-app
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: example-self-hosted-saas-app
           image: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app:v1.0.0
           ports:
             - containerPort: 3000
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: "100m"
