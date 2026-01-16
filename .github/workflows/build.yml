@@ -54,8 +54,11 @@ jobs:
         if: github.event.inputs.tag != ''
         run: |
           git checkout ${{ github.event.inputs.tag }}
-      - name: Log in to Harbor
-        run: echo "${{ secrets.HARBOR_SECRET }}" | docker login https://harbor.local -u admin --password-stdin
+      - name: Set up Buildx (remote)
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: remote
+          endpoint: tcp://buildkitd.buildkit:1234
       - name: Get and increment latest tag
         id: semver
         run: |
@@ -77,25 +80,16 @@ jobs:
             echo "New tag: $NEW_TAG"
           fi
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-      - name: Build Docker image
-        run: |
-          docker build -t $IMAGE_NAME:${NEW_TAG} .
-          docker tag $IMAGE_NAME:${NEW_TAG} $IMAGE_NAME:latest
-      - name: Push Docker image (new tag)
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: docker push $IMAGE_NAME:${NEW_TAG}
-      - name: Push Docker image (latest)
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: docker push $IMAGE_NAME:latest
-      - name: Install kubectl
-        run: |
-          KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
-          echo "Installing kubectl version: ${KUBECTL_VERSION}"
-          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-      - name: Run example kubectl command if you don't want to use argoCD
-        run: kubectl get pods -n example-self-hosted-saas-app
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.NEW_TAG }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:latest
+          cache-to: type=inline
       - name: Create and push new git tag
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
