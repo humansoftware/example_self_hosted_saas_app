@@ -60,13 +60,11 @@ jobs:
           registry: harbor.local
           username: admin
           password: ${{ secrets.HARBOR_SECRET }}
-      - name: Set up Buildx (kubernetes)
+      - name: Set up Buildx (remote)
         uses: docker/setup-buildx-action@v3
         with:
-          driver: kubernetes
-          driver-opts: |
-            namespace=buildkit
-            replicas=1
+          driver: remote
+          endpoint: tcp://buildkitd.buildkit:1234
       - name: Get and increment latest tag
         id: semver
         run: |
