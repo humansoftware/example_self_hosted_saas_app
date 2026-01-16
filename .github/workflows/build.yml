@@ -88,8 +88,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.NEW_TAG }}
             ${{ env.IMAGE_NAME }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:latest
-          cache-to: type=inline
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
       - name: Create and push new git tag
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
