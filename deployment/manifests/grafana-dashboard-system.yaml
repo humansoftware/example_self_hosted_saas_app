@@ -108,36 +108,7 @@ data:
           "steppedLine": true,
           "yaxes": [{"format":"short","min":0,"max":1},{"format":"short"}]
         },
-        {
-          "type": "graph",
-          "title": "Elasticsearch Probe Up",
-          "targets": [
-            { "expr": "example_app_probe_up{app_metric=\"es\"}", "refId": "E2" }
-          ],
-          "id": 15,
-          "gridPos": { "x": 18, "y": 14, "w": 6, "h": 6 },
-          "lines": true,
-          "linewidth": 2,
-          "fill": 0,
-          "points": false,
-          "steppedLine": true,
-          "yaxes": [{"format":"short","min":0,"max":1},{"format":"short"}]
-        },
-        {
-          "type": "graph",
-          "title": "Cassandra Probe Up",
-          "targets": [
-            { "expr": "example_app_probe_up{app_metric=\"cassandra\"}", "refId": "E3" }
-          ],
-          "id": 16,
-          "gridPos": { "x": 12, "y": 20, "w": 6, "h": 6 },
-          "lines": true,
-          "linewidth": 2,
-          "fill": 0,
-          "points": false,
-          "steppedLine": true,
-          "yaxes": [{"format":"short","min":0,"max":1},{"format":"short"}]
-        },
+        
         {
           "type": "graph",
           "title": "DB Probe Success Rate (5m)",
@@ -151,32 +122,7 @@ data:
           "fill": 1,
           "points": false
         },
-        {
-          "type": "graph",
-          "title": "Elasticsearch Probe Success Rate (5m)",
-          "targets": [
-            { "expr": "rate(example_app_probe_total{app_metric=\"es\",result=\"success\"}[5m])", "refId": "E5" }
-          ],
-          "id": 18,
-          "gridPos": { "x": 12, "y": 26, "w": 6, "h": 6 },
-          "lines": true,
-          "linewidth": 2,
-          "fill": 1,
-          "points": false
-        },
-        {
-          "type": "graph",
-          "title": "Cassandra Probe Success Rate (5m)",
-          "targets": [
-            { "expr": "rate(example_app_probe_total{app_metric=\"cassandra\",result=\"success\"}[5m])", "refId": "E6" }
-          ],
-          "id": 19,
-          "gridPos": { "x": 18, "y": 26, "w": 6, "h": 6 },
-          "lines": true,
-          "linewidth": 2,
-          "fill": 1,
-          "points": false
-        }
+        
       ],
       "schemaVersion": 16,
       "version": 2

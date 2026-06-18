@@ -6,8 +6,7 @@ export default function Home() {
   const [apiResponse, setApiResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [dbResponse, setDbResponse] = useState<any>(null);
-  const [cassandraResponse, setCassandraResponse] = useState<any>(null);
-  const [elasticResponse, setElasticResponse] = useState<any>(null);
+  
 
   const testApi = async () => {
     setLoading(true);
@@ -33,29 +32,7 @@ export default function Home() {
     setLoading(false);
   };
 
-  const testCassandra = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/cassandratest');
-      const data = await response.json();
-      setCassandraResponse(data);
-    } catch (error) {
-      setCassandraResponse({ error: 'Failed to fetch from Cassandra API' });
-    }
-    setLoading(false);
-  };
-
-  const testElastic = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/elastictest');
-      const data = await response.json();
-      setElasticResponse(data);
-    } catch (error) {
-      setElasticResponse({ error: 'Failed to fetch from Elastic API' });
-    }
-    setLoading(false);
-  };
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gray-50">
@@ -114,52 +91,7 @@ export default function Home() {
                   )}
                 </td>
               </tr>
-              <tr className="border-t">
-                <td className="p-4">
-                  <button
-                    onClick={testCassandra}
-                    disabled={loading}
-                    className="bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 transition-colors disabled:bg-yellow-400"
-                  >
-                    {loading ? 'Testing...' : 'Test Cassandra'}
-                  </button>
-                </td>
-                <td className="p-4">
-                  {cassandraResponse && (
-                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md">
-                      {JSON.stringify(cassandraResponse, null, 2)}
-                    </pre>
-                  )}
-                </td>
-              </tr>
-              <tr className="border-t">
-                <td className="p-4">
-                  <button
-                    onClick={testElastic}
-                    disabled={loading}
-                    className="bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition-colors disabled:bg-teal-400"
-                  >
-                    {loading ? 'Testing...' : 'Test Elasticsearch'}
-                  </button>
-                </td>
-                <td className="p-4">
-                  {elasticResponse && (
-                    <>
-                      <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-2 rounded-md mb-2">
-                        {JSON.stringify(elasticResponse, null, 2)}
-                      </pre>
-                      {elasticResponse.debugInfo && (
-                        <details className="mt-2">
-                          <summary className="cursor-pointer text-xs text-gray-500">Show debug info</summary>
-                          <pre className="whitespace-pre-wrap text-xs bg-gray-100 p-2 rounded-md">
-                            {JSON.stringify(elasticResponse.debugInfo, null, 2)}
-                          </pre>
-                        </details>
-                      )}
-                    </>
-                  )}
-                </td>
-              </tr>
+              
             </tbody>
           </table>
         </div>
