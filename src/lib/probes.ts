@@ -1,6 +1,4 @@
 import { markFailure, markSuccess } from '../lib/metrics';
-import createCassandraClient from './clients/cassandra';
-import createEsClient from './clients/elasticsearch';
 import createPgClient from './clients/postgres';
 
 const PROBE_TIMEOUT_MS = 5000;
@@ -21,28 +19,4 @@ export async function probeDb(): Promise<boolean> {
     }
 }
 
-export async function probeEs(): Promise<boolean> {
-    try {
-        const client = createEsClient();
-        await withTimeout(client.info(), PROBE_TIMEOUT_MS);
-        markSuccess('es');
-        return true;
-    } catch (e) {
-        markFailure('es');
-        return false;
-    }
-}
-
-export async function probeCassandra(): Promise<boolean> {
-    const client = createCassandraClient();
-    try {
-        await withTimeout(client.execute('SELECT now() FROM system.local'), PROBE_TIMEOUT_MS);
-        markSuccess('cassandra');
-        return true;
-    } catch (e) {
-        markFailure('cassandra');
-        return false;
-    }
-}
-
-export default { probeDb, probeEs, probeCassandra };
+export default { probeDb };

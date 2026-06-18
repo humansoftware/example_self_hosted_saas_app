@@ -31,13 +31,6 @@ spec:
           annotations:
             summary: "example-self-hosted-saas-app DB dependency is down"
             description: "No successful probes for endpoint=db in the last 10 minutes."
-        - alert: ExampleServiceESDown
-          expr: sum_over_time(example_app_probe_up{app_metric="es"}[10m]) == 0
-          labels:
-            severity: critical
-          annotations:
-            summary: "example-self-hosted-saas-app Elasticsearch dependency is down"
-            description: "No successful probes for endpoint=es in the last 10 minutes."
         - alert: ExampleServiceDeploymentUnavailable
           expr: kube_deployment_status_replicas_unavailable{deployment="example-self-hosted-saas-app",namespace="example-self-hosted-saas-app"} > 0
           labels:
