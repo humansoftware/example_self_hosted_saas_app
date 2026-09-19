@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+.next
+.env*
+*.log
+coverage
+dist
+out
+tmp
+Dockerfile*
+README.md
+AGENTS.md
+deployment
