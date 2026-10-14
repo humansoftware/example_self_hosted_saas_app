@@ -20,7 +20,7 @@ jobs:
     if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     runs-on: example-self-hosted-saas-app-pr
     concurrency:
-      group: example-self-hosted-saas-app-pr-${{ github.event.pull_request.number }}
+      group: example-self-hosted-saas-app-pr-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: true
     steps:
       - name: Checkout
@@ -55,7 +55,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: main
+          # Manual rebuilds always rebuild current main. A push must build the
+          # exact commit it was triggered for: publication is serialized, so a
+          # queued run would otherwise pick up a later commit and tag it.
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.sha }}
           fetch-depth: 0
           fetch-tags: true
       - name: Validate existing image version tag (build main source)

@@ -134,6 +134,7 @@ spec:
 - Pull requests run **CI** on `example-self-hosted-saas-app-pr`, using a tokenless Kubernetes service account and per-job rootless BuildKit at `tcp://127.0.0.1:1234`. They build without publishing, registry cache writes, source version allocation, or Kubernetes API access.
 - Main pushes run **Publish** on `example-self-hosted-saas-app-main`, using shared BuildKit and infrastructure-mounted Harbor authentication. Publication writes version/latest images and buildcache, then creates the next patch source tag.
 - Manual publication must be dispatched from **main**. The required existing `vMAJOR.MINOR.PATCH` tag selects only the image version: the build always checks out **main**, does not check out that tag, and creates no source tag. Automatic and manual publication share one serialized queue.
+- Dispatching manually from a **non-main** branch runs **CI** on the `-pr` pool instead; the `tag` input is ignored on that path, and GitHub still requires a value because the workflow declares it as required.
 - Both runner pools are repository-scoped in the `example-self-hosted-saas-app` namespace. Public-repository outside contributors require approval **before the first self-hosted run**. Approving an outside workflow trusts its code to execute in the cluster; namespaces and runner labels are operational routing, not authorization boundaries.
 
 ## Integration with Infrastructure
