@@ -17,7 +17,7 @@ permissions:
 jobs:
   ci:
     name: CI
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     runs-on: example-self-hosted-saas-app-pr
     concurrency:
       group: example-self-hosted-saas-app-pr-${{ github.event.pull_request.number }}
