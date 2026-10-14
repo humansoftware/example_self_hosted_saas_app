@@ -7,93 +7,114 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Workflow to manually rebuild the image for a specific tag'
+        description: 'Build main source using an existing vMAJOR.MINOR.PATCH image version'
         required: true
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
-  precheck:
-    runs-on: ubuntu-latest
-    outputs:
-      harbor_secret_set: ${{ steps.check_harbor_secret.outputs.harbor_secret_set }}
+  ci:
+    name: CI
+    if: github.event_name == 'pull_request'
+    runs-on: example-self-hosted-saas-app-pr
+    concurrency:
+      group: example-self-hosted-saas-app-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          fetch-tags: true
-      - name: Check Harbor Secret
-        id: check_harbor_secret
-        run: |
-          if [ -z "${{ secrets.HARBOR_SECRET }}" ]; then
-            echo "::error::HARBOR_SECRET is not set.\nTo set it:"
-            echo "1. Go to your repository on GitHub."
-            echo "2. Click on 'Settings' > 'Secrets and variables' > 'Actions'."
-            echo "3. Click 'New repository secret'."
-            echo "4. Name it HARBOR_SECRET and paste your Harbor password or token as the value."
-            echo "5. Save the secret."
-            echo "harbor_secret_set=false" >> $GITHUB_OUTPUT
-            exit 1
-          else
-            echo "HARBOR_SECRET is set."
-            echo "harbor_secret_set=true" >> $GITHUB_OUTPUT
-          fi
+          persist-credentials: false
+      - name: Set up Buildx (per-job rootless BuildKit)
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: remote
+          endpoint: tcp://127.0.0.1:1234
+      - name: Build image without publishing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
 
-  build:
-    needs: precheck
-    if: needs.precheck.outputs.harbor_secret_set == 'true'
-    runs-on: self-hosted
+  publish:
+    name: Publish
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: example-self-hosted-saas-app-main
+    concurrency:
+      group: example-self-hosted-saas-app-publish
+      cancel-in-progress: false
+      queue: max
+    permissions:
+      contents: write
     env:
       IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
+      REBUILD_TAG: ${{ inputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: main
           fetch-depth: 0
           fetch-tags: true
-      - name: Checkout tag if provided
-        if: github.event.inputs.tag != ''
+      - name: Validate existing image version tag (build main source)
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
         run: |
-          git checkout ${{ github.event.inputs.tag }}
-      - name: Set up Buildx (remote)
+          if [[ ! "$REBUILD_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo '::error::Rebuild tag must be vMAJOR.MINOR.PATCH.'
+            exit 1
+          fi
+          git show-ref --verify --quiet "refs/tags/$REBUILD_TAG" || {
+            echo '::error::Rebuild tag must already exist in the source repository.'
+            exit 1
+          }
+      - name: Set up Buildx (shared BuildKit)
         uses: docker/setup-buildx-action@v3
         with:
           driver: remote
           endpoint: tcp://buildkitd.buildkit:1234
       - name: Get and increment latest tag
-        id: semver
+        shell: bash
         run: |
-          if [ -n "${{ github.event.inputs.tag }}" ]; then
-            NEW_TAG="${{ github.event.inputs.tag }}"
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            NEW_TAG="$REBUILD_TAG"
             echo "Using provided tag: $NEW_TAG"
           else
-            LATEST_TAG=$(git tag --list --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+            LATEST_TAG=""
+            while IFS= read -r TAG; do
+              if [[ "$TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+                LATEST_TAG="$TAG"
+                break
+              fi
+            done < <(git tag --list --sort=-v:refname)
             if [ -z "$LATEST_TAG" ]; then
               NEW_TAG="v1.0.0"
             else
-              # Remove 'v' prefix for parsing
               LATEST_TAG_NUMERIC=${LATEST_TAG#v}
               IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG_NUMERIC"
-              PATCH=$((PATCH + 1))
+              PATCH=$((10#$PATCH + 1))
               NEW_TAG="v$MAJOR.$MINOR.$PATCH"
             fi
             echo "Latest tag: $LATEST_TAG"
             echo "New tag: $NEW_TAG"
           fi
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_ENV"
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+          push: true
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.NEW_TAG }}
             ${{ env.IMAGE_NAME }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=min
       - name: Create and push new git tag
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag $NEW_TAG
-          git push origin $NEW_TAG
+          git tag "$NEW_TAG"
+          git push origin "refs/tags/$NEW_TAG"
