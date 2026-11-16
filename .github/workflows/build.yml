@@ -41,7 +41,7 @@ jobs:
   build:
     needs: precheck
     if: needs.precheck.outputs.harbor_secret_set == 'true'
-    runs-on: self-hosted
+    runs-on: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && 'example-self-hosted-saas-app-main' || 'example-self-hosted-saas-app-pr' }}
     env:
       IMAGE_NAME: harbor.local/example-self-hosted-saas-app/example-self-hosted-saas-app
     steps:
@@ -58,7 +58,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver: remote
-          endpoint: ${{ github.event_name == 'pull_request' && 'tcp://127.0.0.1:1234' || 'tcp://buildkitd.buildkit:1234' }}
+          # Pull requests run on the pull-request pool, whose BuildKit is the
+          # per-job sidecar on loopback. Main runs on the main pool, which uses
+          # the shared in-cluster builder.
+          endpoint: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && 'tcp://buildkitd.buildkit:1234' || 'tcp://127.0.0.1:1234' }}
       - name: Get and increment latest tag
         id: semver
         run: |
